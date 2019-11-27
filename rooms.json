@@ -2,41 +2,58 @@
         {
             "name": "Entrance",
             "description": "Welcome to the mansion! \nYou can see doors leading to the dining room to the North.\nYou can see doors leadint to the kitchen to the South.\nYou van see doors leading to the living room to the East.",
-            "exits": ["dining","none","kitchen","living"]
+            "exits": ["dining","none","kitchen","living"],
+            "items": [],
+            "special": {
+            }
         },
         {
             "name": "Dining",
             "description": "Dining room. Empty tables.\nYou can see doors leading to the patio to the North.\nYou can see doors leading to the entrance to the South.",
-            "exits": ["patio","none","entrance","none"]
+            "exits": ["patio","none","entrance","none"],
+            "items": [],
+            "special": {}
         },
         {
             "name": "Patio",
             "description": "Take a moment to rest on the patio.\nYou can see doors leading to the dining room to the South.\nYou can see doors leading to the tower to the East.",
-            "exits": ["none","none","dining","tower"]
+            "exits": ["none","none","dining","tower"],
+            "items": [],
+            "special": {}
         },
         {
             "name": "Kitchen",
             "description": "Cooking time! Pots and stuff.\nYou can see doors leading to the entrance to the North.\nYou can see doors leading to the bedroom to the East.",
-            "exits": ["entrance","none","none","bedroom"]
+            "exits": ["entrance","none","none","bedroom"],
+            "items": [],
+            "special": {}
         },
         {
             "name": "Tower",
             "description": "Tower with staircase leading upwards.\nYou can see doors leading to the patio to the West.\nYou can see doors leading to the living room to the South.",
-            "exits": ["none","patio","living","none"]
+            "exits": ["none","patio","living","none"],
+            "items": [],
+            "special": {}
         },
         {
             "name": "Living",
             "description": "A cosy little living room.\nYou can see doors leading to the tower to the North.\nYou can see doors leading to the entrance to the West.\nYou can see doors leading to the taxidermy room to the East.",
-            "exits": ["tower","entrance","none","taxidermy"]
+            "exits": ["tower","entrance","none","taxidermy"],
+            "items": [],
+            "special": {}
         },
         {
             "name": "Taxidermy",
             "description": "Scaaary taxidermy room!\nYou can see doors leading to the living room to the West.\nYou can see doors leading to the bedroom to the South.",
-            "exits": ["none","living","bedroom","none"]
+            "exits": ["none","living","bedroom","none"],
+            "items": [],
+            "special": {}
         },
         {
             "name": "Bedroom",
             "description": "A warm bed and a searing fireplace.\nYou can see doors leading to the taxidermy room to the North.\nYou can see doors leading to the kitchen to the West.",
-            "exits": ["taxidermy","kitchen","none","none"]
+            "exits": ["taxidermy","kitchen","none","none"],
+            "items": [],
+            "special": {}
         }
     ]
