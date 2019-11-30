@@ -1,6 +1,8 @@
 import json
 
 FILE_PATH = 'rooms.json'
+ITEM_ATTRS_FILE_PATH = 'attributes.json'
+ITEM_FILE_PATH = 'items.json'
 ACTION_VERBS = ['go','move','look','inspect','take','open','close','push','pull','pick','talk']
 COMBINATION_VERBS = ['give','use','put']
 INSPECT_VERBS = ['look','inspect']
@@ -11,6 +13,9 @@ EAST_STRINGS = ['e','east','esat']
 SORRY_STRING = 'I\'m sorry, I didn\'t catch that.'
 MOVE_VERBS = ['go','move']
 CANNOT_TAKE = "There is no such item here for you to take."
+CANNOT_EAT = "You can't eat that!"
+CANNOT_USE = "That won't work."
+CANNOT_LOOK = "There is no such item here."
 EXIT_CODES = {
     'n':0,
     'w':1,
@@ -22,6 +27,8 @@ EXIT_CODES = {
 class GameState:
     def __init__(self):
         self.rooms = self.get_rooms_from_file(FILE_PATH)
+        self.item_attribute_pairs = self.get_item_attributes_from_file(ITEM_ATTRS_FILE_PATH)
+        self.items_repository = self.get_items_from_file(ITEM_FILE_PATH)
         self.current_room = None
         self.change_current_room('Entrance')
         self.loop = True
@@ -33,8 +40,22 @@ class GameState:
         with open(file_path) as rooms_file:
             data = json.load(rooms_file)
             for d in data:
-                rooms.append(Room(d))
+                rooms.append(Room(d,self))
         return rooms
+
+    def get_item_attributes_from_file(self,file_path):
+        #attributes = {}
+        with open(file_path) as attr_file:
+            data = json.load(attr_file)
+        return data
+
+    def get_items_from_file(self,file_path):
+        items = list()
+        with open(file_path) as items_file:
+            data = json.load(items_file)
+            for d in data:
+                items.append(Item(d,self))
+        return items
 
     def change_current_room(self,room_name):
         self.current_room = next(room for room in self.rooms if room['name']==room_name)
@@ -52,6 +73,13 @@ class GameState:
             self.current_room.items.remove(item)
         else:
             print(CANNOT_TAKE)
+
+    def pick(self,item):
+        if item in self.current_room.items:
+            self.inventory.append(item)
+            self.current_room.items.remove(item)
+        else:
+            print(CANNOT_TAKE)
     
     def inspect(self):
         print(self.current_room.description)
@@ -61,46 +89,67 @@ class GameState:
     
     def look_at(self,item):
         if item in self.current_room.items:
-            self.inventory.append(item)
-            self.current_room.items.remove(item)
+            print(item.description)
+        elif item in self.inventory:
+            print(item.description_inventory)
         else:
-            print(CANNOT_TAKE)
+            print(CANNOT_LOOK)
 
     def open(self,item):
-        #open item in room or inventory
-        pass
+        if item in self.current_room.items:
+            item.call('open')
+        elif item in self.inventory:
+            item.call('open')
 
     def close(self,item):
-        #close item in room or inventory
-        pass
+        if item in self.current_room.items:
+            item.call('close')
+        elif item in self.inventory:
+            item.call('close')
 
     def read(self,item):
-        #read item in room or inventory
-        pass
+        if item in self.current_room.items:
+            item.call('read')
+        elif item in self.inventory:
+            item.call('read')
 
     def push(self,item):
-        #push item in room
-        pass
+        if item in self.current_room.items:
+            item.call('push')
+        elif item in self.inventory:
+            item.call('push')
 
     def pull(self,item):
-        #pull item in room or inventory
-        pass
+        if item in self.current_room.items:
+            item.call('pull')
+        elif item in self.inventory:
+            item.call('pull')
 
-    def pick(self,item):
-        #pick up item in room or inventory
-        pass
+    def eat(self,item):
+        if item in self.current_room.items and item.attributes.consumable:
+            self.current_room.items.remove(item)
+            exec(item.attributes.consumable_code)
+        elif item in self.inventory and item.attributes.consumable:
+            self.inventory.remove(item)
+            exec(item.attributes.consumable_code)
+        else:
+            print(CANNOT_EAT)
 
-    def talk(self,item):
-        #talk to item in room or inventory
+    def talk(self,receiver):
+        #talk to person in room or inventory
         pass
 
     def give(self,item):
-        #talk to item in room or inventory
+        #give item from inventory to person in current room
         pass
 
-    def use(self,item):
-        #talk to item in room or inventory
-        pass
+    def use(self,item1,item2):
+        #use item on second item
+        #pass
+        if (item1 in self.inventory) and (item2 in self.inventory or item2 in self.current_room.items):
+            item1.combine(item2)
+        else:
+            print(CANNOT_USE)
 
     def put(self,item):
         #talk to item in room or inventory
@@ -112,13 +161,22 @@ class GameState:
 class Item:
     def __init__(self,item_data,gs=None):
         self.game_state = gs
+        self.id = item_data['id']
         self.name = item_data['name']
+        self.names = item_data['names']
         self.description = item_data['description']
+        self.inspect = item_data['inspect']
         self.description_inventory = item_data['description_inventory']
+        self.attributes = item_data['attributes']
     
     def combine(self,second_item):
         #combine the two items
+        #pass
         pass
+
+    def call(self,activity):
+        getattr(self,activity,game_state.sorry)()
+
 
 
 class Parser:

@@ -1,8 +1,38 @@
 [
     {
-        "name":"",
-        "description":"",
-        "description_inventory":""
-
+        "id":1,
+        "name":"Knife",
+        "names": ["knife","rusty knife"],
+        "description":"A rusty knife is lying on the table.",
+        "inspect":"An old knife covered by rust.",
+        "description_inventory":"An old rusty knife.",
+        "attributes": {
+            "cutter":true
+        }
+    },
+    {
+        "id":2,
+        "name":"Apple",
+        "names": ["apple"],
+        "description":"A juicy green apple is sitting on the desk.",
+        "inspect":"A wonderful little apple.",
+        "description_inventory":"A juicy green apple.",
+        "attributes": {
+            "cuttable":true,
+            "consumable": true,
+            "consumable_code":"lambda self: self.gs.current_room.items.add([item for item in self.gs.current_room.items if item.id=3])"
+        }
+    },
+    {
+        "id":3,
+        "name":"Key",
+        "names": ["key"],
+        "description":"N/A",
+        "inspect":"A key! What could it open?",
+        "description_inventory":"Must be the key to somewhere.",
+        "attributes": {
+            "keyhash":1,
+            "key":true
+        }
     }
 ]

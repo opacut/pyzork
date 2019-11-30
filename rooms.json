@@ -1,20 +1,23 @@
 [
         {
+            "ID":1,
             "name": "Entrance",
-            "description": "Welcome to the mansion! \nYou can see doors leading to the dining room to the North.\nYou can see doors leadint to the kitchen to the South.\nYou van see doors leading to the living room to the East.",
+            "description": "Welcome to the mansion! \nYou can see doors leading to the dining room to the North.\nYou can see doors leading to the kitchen to the South.\nYou van see doors leading to the living room to the East.",
             "exits": ["dining","none","kitchen","living"],
             "items": [],
             "special": {
             }
         },
         {
+            "ID":2,
             "name": "Dining",
             "description": "Dining room. Empty tables.\nYou can see doors leading to the patio to the North.\nYou can see doors leading to the entrance to the South.",
             "exits": ["patio","none","entrance","none"],
-            "items": [],
+            "items": [1],
             "special": {}
         },
         {
+            "ID":3,
             "name": "Patio",
             "description": "Take a moment to rest on the patio.\nYou can see doors leading to the dining room to the South.\nYou can see doors leading to the tower to the East.",
             "exits": ["none","none","dining","tower"],
@@ -22,13 +25,15 @@
             "special": {}
         },
         {
+            "ID":4,
             "name": "Kitchen",
             "description": "Cooking time! Pots and stuff.\nYou can see doors leading to the entrance to the North.\nYou can see doors leading to the bedroom to the East.",
             "exits": ["entrance","none","none","bedroom"],
-            "items": [],
+            "items": [2],
             "special": {}
         },
         {
+            "ID":5,
             "name": "Tower",
             "description": "Tower with staircase leading upwards.\nYou can see doors leading to the patio to the West.\nYou can see doors leading to the living room to the South.",
             "exits": ["none","patio","living","none"],
@@ -36,6 +41,7 @@
             "special": {}
         },
         {
+            "ID":6,
             "name": "Living",
             "description": "A cosy little living room.\nYou can see doors leading to the tower to the North.\nYou can see doors leading to the entrance to the West.\nYou can see doors leading to the taxidermy room to the East.",
             "exits": ["tower","entrance","none","taxidermy"],
@@ -43,6 +49,7 @@
             "special": {}
         },
         {
+            "ID":7,
             "name": "Taxidermy",
             "description": "Scaaary taxidermy room!\nYou can see doors leading to the living room to the West.\nYou can see doors leading to the bedroom to the South.",
             "exits": ["none","living","bedroom","none"],
@@ -50,6 +57,7 @@
             "special": {}
         },
         {
+            "ID":8,
             "name": "Bedroom",
             "description": "A warm bed and a searing fireplace.\nYou can see doors leading to the taxidermy room to the North.\nYou can see doors leading to the kitchen to the West.",
             "exits": ["taxidermy","kitchen","none","none"],
