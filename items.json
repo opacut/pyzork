@@ -22,7 +22,7 @@
             "pickable":true,
             "cuttable":true,
             "consumable": true,
-            "consumable_code":"lambda self: self.gs.current_room.items.add([item for item in self.gs.current_room.items if item.id=3])"
+            "consumable_code":"self.inventory.append(3)"
         }
     },
     {

@@ -1,13 +1,13 @@
 [
         {
-            "ID":1,
+            "ID":0,
             "name": "Entrance",
-            "description": "Welcome to the mansion! \nYou can see doors leading to the dining room to the North.\nYou can see doors leading to the kitchen to the South.\nYou van see doors leading to the living room to the East.",
+            "description": "Welcome to the mansion!",
             "exits_old": ["dining","none","kitchen","living"],
             "exits": {
-                "n":"dining",
-                "w":"living",
-                "s":"kitchen"
+                "n":1,
+                "w":5,
+                "s":3
             },
             "locked": [],
             "items": [],
@@ -15,67 +15,80 @@
             }
         },
         {
-            "ID":2,
-            "name": "Dining",
-            "description": "Dining room. Empty tables.\nYou can see doors leading to the patio to the North.\nYou can see doors leading to the entrance to the South.",
+            "ID":1,
+            "name": "Dining room",
+            "description": "Dining room. Empty tables.",
             "exits_old": ["patio","none","entrance","none"],
             "exits": {
-                "n":"patio",
-                "s":"entrance"
+                "n":2,
+                "s":0
             },
             "locked": [],
             "items": [1],
             "special": {}
         },
         {
-            "ID":3,
+            "ID":2,
             "name": "Patio",
-            "description": "Take a moment to rest on the patio.\nYou can see doors leading to the dining room to the South.\nYou can see doors leading to the tower to the East.",
+            "description": "Take a moment to rest on the patio.",
             "exits_old": ["none","none","dining","tower"],
             "exits": {
-                "w":"tower",
-                "s":"dining"
+                "w":4,
+                "s":1
             },
             "locked": [],
             "items": [],
             "special": {}
         },
         {
-            "ID":4,
+            "ID":3,
             "name": "Kitchen",
-            "description": "Cooking time! Pots and stuff.\nYou can see doors leading to the entrance to the North.\nYou can see doors leading to the bedroom to the East.",
+            "description": "Cooking time! Pots and stuff.",
             "exits_old": ["entrance","none","none","bedroom"],
             "exits": {
-                "n":"entrance",
-                "w":"bedroom"
+                "n":0,
+                "w":7
             },
             "locked": [],
             "items": [2],
             "special": {}
         },
         {
-            "ID":5,
+            "ID":4,
             "name": "Tower",
-            "description": "Tower with staircase leading upwards.\nYou can see doors leading to the patio to the West.\nYou can see doors leading to the living room to the South.",
+            "description": "Tower with staircase leading upwards.",
             "exits_old": ["none","patio","living","none"],
             "exits": {
-                "s":"living",
-                "e":"patio",
-                "u":"attic"
+                "s":5,
+                "e":2,
+                "u":8
             },
-            "locked": ["u"],
+            "locked": [],
+            "items": [],
+            "special": {}
+        },
+        {
+            "ID":5,
+            "name": "Living room",
+            "description": "A cosy little living room.",
+            "exits_old": ["tower","entrance","none","taxidermy"],
+            "exits": {
+                "n":4,
+                "w":6,
+                "e":0
+            },
+            "locked": [],
             "items": [],
             "special": {}
         },
         {
             "ID":6,
-            "name": "Living",
-            "description": "A cosy little living room.\nYou can see doors leading to the tower to the North.\nYou can see doors leading to the entrance to the West.\nYou can see doors leading to the taxidermy room to the East.",
-            "exits_old": ["tower","entrance","none","taxidermy"],
+            "name": "Taxidermy",
+            "description": "Scaaary taxidermy room!",
+            "exits_old": ["none","living","bedroom","none"],
             "exits": {
-                "n":"tower",
-                "w":"taxidermy",
-                "e":"entrance"
+                "s":7,
+                "e":5
             },
             "locked": [],
             "items": [],
@@ -83,12 +96,12 @@
         },
         {
             "ID":7,
-            "name": "Taxidermy",
-            "description": "Scaaary taxidermy room!\nYou can see doors leading to the living room to the West.\nYou can see doors leading to the bedroom to the South.",
-            "exits_old": ["none","living","bedroom","none"],
+            "name": "Bedroom",
+            "description": "A warm bed and a searing fireplace.",
+            "exits_old": ["taxidermy","kitchen","none","none"],
             "exits": {
-                "s":"bedroom",
-                "e":"living"
+                "n":6,
+                "e":3
             },
             "locked": [],
             "items": [],
@@ -96,22 +109,13 @@
         },
         {
             "ID":8,
-            "name": "Bedroom",
-            "description": "A warm bed and a searing fireplace.\nYou can see doors leading to the taxidermy room to the North.\nYou can see doors leading to the kitchen to the West.",
-            "exits_old": ["taxidermy","kitchen","none","none"],
+            "name":"Attic",
+            "description":"A secret room!",
+            "exits_old": ["none","none","none","none"],
             "exits": {
-                "n":"taxidermy",
-                "e":"kitchen"
+                "d":4
             },
-            "locked": [],
-            "items": [],
-            "special": {}
-        },
-        {
-            "ID":9,
-            "name":"Secret",
-            "description":"A secret room!\nA staircase leads down.",
-            "exits": ["none","none","none","none"],
+            "locked":[],
             "items": [],
             "special":{}
         }

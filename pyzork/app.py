@@ -18,7 +18,7 @@ CANNOT_TAKE = "There is no such item here for you to take."
 CANNOT_EAT = "You can't eat that!"
 CANNOT_USE = "That won't work."
 CANNOT_LOOK = "There is no such item here."
-STARTING_ROOM = "Entrance"
+STARTING_ROOM = 0#"entrance"
 NO_EXIT = "There is no passage that way."
 EXIT_CODES = {
     'n':0,
@@ -40,6 +40,7 @@ class GameState:
         self.loop = True
         self.parser = Parser(self)
         self.inventory = list()
+        #self.room_index = self.build_rooms_index
 
     def get_rooms_from_file(self, file_path):
         rooms = list()
@@ -63,12 +64,18 @@ class GameState:
                 items.append(Item(d,self))
         return items
 
-    def change_current_room(self,room_name):
-        self.current_room = self.get_room_by_name(room_name)#next(room for room in self.rooms if room.name==room_name)
+    def change_current_room(self,room_id):
+        self.current_room = self.get_room_by_id(room_id)#next(room for room in self.rooms if room.name==room_name)
 
     def get_room_by_name(self,name):
         for room in self.rooms:
-            if room.name == name:
+            if room.name.upper().lower() == name:
+                return room
+        return False
+
+    def get_room_by_id(self,id):
+        for room in self.rooms:
+            if room.id == id:
                 return room
         return False
 
@@ -80,15 +87,54 @@ class GameState:
 
     def move(self,direction):
         #index = EXIT_CODES[direction]
-        if self.current_room.exits.keys().contains(direction) and (direction not in self.current_room.locked):
+        if (direction in self.current_room.exits.keys()) and (direction not in self.current_room.locked):
             self.change_current_room(self.current_room.exits[direction])
+            print(self.get_description())
         else:
             print(NO_EXIT)
 
-    def take(self, item):
-        if item in self.current_room.items:
-            self.inventory.append(item)
-            self.current_room.items.remove(item)
+    def get_item_by_id(self,item_id):
+        for item in self.items_repository:
+            if item.id == item_id:
+                return item
+        return False
+
+    def get_description(self):
+        retstr = self.current_room.description+"\n"
+        for i in self.current_room.items:
+            retstr += self.get_item_by_id(i).description+"\n"
+        for d,r in self.current_room.exits.items():
+            direction = ""
+            if d is 'n':
+                direction = "North"
+            elif d is 'w':
+                direction = "West"
+            elif d is 's':
+                direction = "South"
+            elif d is 'e':
+                direction = "East"
+            elif d is 'u':
+                direction = "upstairs"
+            elif d is 'd':
+                direction = "downstairs"
+            room_name = self.get_room_by_id(r).name.lower()
+            retstr += "You can see doors leading to the "+room_name+" to the "+direction+".\n"
+        return retstr
+            
+            
+    def get_item_by_name(self,item_name):
+        for i in self.items_repository:
+            #item = self.get_item_by_id(i)
+            if i.name.upper().lower() == item_name.upper().lower():
+                return i
+        return False
+
+    def take(self, item_name):
+        item = self.get_item_by_name(item_name)
+        if item.id in self.current_room.items:
+            self.inventory.append(item.id)
+            self.current_room.items.remove(item.id)
+            print("You take the "+item.name+".")
         else:
             print(CANNOT_TAKE)
 
@@ -100,16 +146,23 @@ class GameState:
             print(CANNOT_TAKE)
     
     def inspect(self):
-        print(self.current_room.description)
+        print(self.get_description())
 
     def sorry(self):
         print(SORRY_STRING)
     
-    def look_at(self,item):
-        if item in self.current_room.items:
-            print(item.description)
-        elif item in self.inventory:
-            print(item.description_inventory)
+    def look_at(self,item_name):
+        if item_name.upper().lower() == "inventory" and len(self.inventory) > 0:
+            for i in self.inventory:
+                it = self.get_item_by_id(i)
+                print("You are carrying "+it.description_inventory)
+            return
+        item = self.get_item_by_name(item_name)
+        if item:
+            if item.id in self.current_room.items:
+                print(item.description)
+            elif item.id in self.inventory:
+                print(item.description_inventory)
         else:
             print(CANNOT_LOOK)
 
@@ -143,13 +196,14 @@ class GameState:
         elif item in self.inventory:
             item.call('pull')
 
-    def eat(self,item):
-        if item in self.current_room.items and item.attributes.consumable:
-            self.current_room.items.remove(item)
-            exec(item.attributes.consumable_code)
-        elif item in self.inventory and item.attributes.consumable:
-            self.inventory.remove(item)
-            exec(item.attributes.consumable_code)
+    def eat(self,item_name):
+        item = self.get_item_by_name(item_name)
+        if item.id in self.current_room.items and item.attributes['consumable']:
+            self.current_room.items.remove(item.id)
+            exec(item.attributes['consumable_code'])
+        elif item.id in self.inventory and item.attributes['consumable']:
+            self.inventory.remove(item.id)
+            exec(item.attributes['consumable_code'])
         else:
             print(CANNOT_EAT)
 
@@ -200,15 +254,31 @@ class Parser:
     def __init__(self,gs):
         self.game_state = gs
 
+    def parse_movement(self,direction):
+        if direction in NORTH_STRINGS:
+            self.game_state.move('n')
+        elif direction in WEST_STRINGS:
+            self.game_state.move('w')
+        elif direction in SOUTH_STRINGS:
+            self.game_state.move('s')
+        elif direction in EAST_STRINGS:
+            self.game_state.move('e')
+        elif direction in UP_STRINGS:
+            self.game_state.move('u')
+        elif direction in DOWN_STRINGS:
+            self.game_state.move('d')
+        
+
     def parse(self,inp):
         inp = inp.upper().lower()
         inp_split = inp.split()
         #if len(inp_split) == 1:
         if inp_split[0] == 'look':
-            if inp_split[1]=='around':
-                self.game_state.inspect()
-            else:
-                self.game_state.look_at(inp_split[-1])
+            if len(inp_split) > 1:
+                if inp_split[1]=='around':
+                    self.game_state.inspect()
+                else:
+                    self.game_state.look_at(inp_split[-1])
         elif inp_split[0] in NORTH_STRINGS:
             self.game_state.move('n')
         elif inp_split[0] in WEST_STRINGS:
@@ -222,7 +292,9 @@ class Parser:
         elif inp_split[0] in DOWN_STRINGS:
             self.game_state.move('d')
         elif inp_split[0] in MOVE_VERBS:
-            self.parse(str(inp_split[1:]))
+            #self.parse(inp_split[1:])
+            #self.game_state.move(inp_split[1])
+            self.parse_movement(inp_split[1])
         elif inp_split[0] == 'take':
             self.game_state.take(inp_split[-1])
         elif inp_split[0] == 'open':
@@ -239,6 +311,8 @@ class Parser:
             self.game_state.pick(inp_split[-1])
         elif inp_split[0] == 'talk':
             self.game_state.talk(inp_split[-1])
+        elif inp_split[0] == 'eat':
+            self.game_state.eat(inp_split[-1])
         #these need more
         elif inp_split[0] == 'give':
             self.game_state.give(inp_split[1],inp_split[3])
@@ -253,6 +327,7 @@ class Parser:
         
 class Room:
     def __init__(self, room_data,gs=None):
+        self.id = room_data['ID']
         self.name = room_data['name']
         self.description = room_data['description']
         self.exits = room_data['exits']
@@ -266,9 +341,10 @@ class Room:
 
 game_state = GameState()
 print("Welcome to Zork!")
+print(game_state.get_description())
 while(game_state.loop):
     print()
-    print(game_state.current_room.description)
-    inp = input("What would you like to do next?\n")
-
-    game_state.current_room.exit(inp)
+    #print(game_state.get_description())
+    inp = input("Order:")#input("What would you like to do next?\n")
+    game_state.parser.parse(inp)
+    #game_state.current_room.exit(inp)
