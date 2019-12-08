@@ -10,17 +10,23 @@ NORTH_STRINGS = ['n','north','notrh']
 WEST_STRINGS = ['w','west','wset']
 SOUTH_STRINGS = ['s','south','sotuh']
 EAST_STRINGS = ['e','east','esat']
-SORRY_STRING = 'I\'m sorry, I didn\'t catch that.'
+UP_STRINGS = ['u','up','upwards','upstairs']
+DOWN_STRINGS = ['d','down','dwon','downwards','downstairs']
+SORRY_STRING = "I'm sorry, I didn't catch that."
 MOVE_VERBS = ['go','move']
 CANNOT_TAKE = "There is no such item here for you to take."
 CANNOT_EAT = "You can't eat that!"
 CANNOT_USE = "That won't work."
 CANNOT_LOOK = "There is no such item here."
+STARTING_ROOM = "Entrance"
+NO_EXIT = "There is no passage that way."
 EXIT_CODES = {
     'n':0,
     'w':1,
     's':2,
-    'e':3
+    'e':3,
+    'u':4,
+    'd':5
 }
 
 
@@ -30,7 +36,7 @@ class GameState:
         self.item_attribute_pairs = self.get_item_attributes_from_file(ITEM_ATTRS_FILE_PATH)
         self.items_repository = self.get_items_from_file(ITEM_FILE_PATH)
         self.current_room = None
-        self.change_current_room('Entrance')
+        self.change_current_room(STARTING_ROOM)
         self.loop = True
         self.parser = Parser(self)
         self.inventory = list()
@@ -58,14 +64,26 @@ class GameState:
         return items
 
     def change_current_room(self,room_name):
-        self.current_room = next(room for room in self.rooms if room['name']==room_name)
+        self.current_room = self.get_room_by_name(room_name)#next(room for room in self.rooms if room.name==room_name)
+
+    def get_room_by_name(self,name):
+        for room in self.rooms:
+            if room.name == name:
+                return room
+        return False
 
     def quit_game(self):
         self.loop = False
 
+    def add_item_to_room(self,item,room):
+        self.get_room_by_name(room).items.add(item.id)
+
     def move(self,direction):
-        index = EXIT_CODES[direction]
-        self.change_current_room(self.current_room.exits[index])
+        #index = EXIT_CODES[direction]
+        if self.current_room.exits.keys().contains(direction) and (direction not in self.current_room.locked):
+            self.change_current_room(self.current_room.exits[direction])
+        else:
+            print(NO_EXIT)
 
     def take(self, item):
         if item in self.current_room.items:
@@ -155,8 +173,9 @@ class GameState:
         #talk to item in room or inventory
         pass
 
-
-
+    def unlock(self,direction):
+        if self.current_room.locked.contains(direction):
+            self.current_room.locked.remove(direction)
 
 class Item:
     def __init__(self,item_data,gs=None):
@@ -176,8 +195,6 @@ class Item:
 
     def call(self,activity):
         getattr(self,activity,game_state.sorry)()
-
-
 
 class Parser:
     def __init__(self,gs):
@@ -200,6 +217,10 @@ class Parser:
             self.game_state.move('s')
         elif inp_split[0] in EAST_STRINGS:
             self.game_state.move('e')
+        elif inp_split[0] in UP_STRINGS:
+            self.game_state.move('u')
+        elif inp_split[0] in DOWN_STRINGS:
+            self.game_state.move('d')
         elif inp_split[0] in MOVE_VERBS:
             self.parse(str(inp_split[1:]))
         elif inp_split[0] == 'take':
@@ -225,6 +246,8 @@ class Parser:
             self.game_state.give(inp_split[1],inp_split[3])
         elif inp_split[0] == 'put':
             self.game_state.give(inp_split[1],inp_split[3])
+        elif inp=='use key on door':
+            self.game_state.unlock()
         else:
             self.game_state.sorry()
         
@@ -236,6 +259,7 @@ class Room:
         self.game_state = gs
         self.special = room_data['special']
         self.items = room_data['items']
+        self.locked = room_data['locked']
 
 
 

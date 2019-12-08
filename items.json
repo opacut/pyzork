@@ -34,5 +34,16 @@
             "keyhash":1,
             "key":true
         }
+    },
+    {
+        "id":4,
+        "name":"Trapdoor",
+        "description":"A Trapdoor leading up.",
+        "inspect":"A Trapdoor leading up.",
+        "description_inventory":"A Trapdoor leading up.",
+        "attributes": {
+            "keyhash":1,
+            "door":true
+        }
     }
 ]
