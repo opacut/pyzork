@@ -7,6 +7,7 @@
         "inspect":"An old knife covered by rust.",
         "description_inventory":"An old rusty knife.",
         "attributes": {
+            "pickable":true,
             "cutter":true
         }
     },
@@ -18,6 +19,7 @@
         "inspect":"A wonderful little apple.",
         "description_inventory":"A juicy green apple.",
         "attributes": {
+            "pickable":true,
             "cuttable":true,
             "consumable": true,
             "consumable_code":"lambda self: self.gs.current_room.items.add([item for item in self.gs.current_room.items if item.id=3])"
@@ -31,6 +33,7 @@
         "inspect":"A key! What could it open?",
         "description_inventory":"Must be the key to somewhere.",
         "attributes": {
+            "pickable":true,
             "keyhash":1,
             "key":true
         }
@@ -38,12 +41,15 @@
     {
         "id":4,
         "name":"Trapdoor",
-        "description":"A Trapdoor leading up.",
-        "inspect":"A Trapdoor leading up.",
-        "description_inventory":"A Trapdoor leading up.",
-        "attributes": {
+        "names":["trapdoor"],
+        "description": "A trapdoor is at the top of the stairs.",
+        "inspect":"A locked trapdoor.",
+        "description_inventory":"Must be a key around here somewhere.",
+        "attributes":{
+            "opennable":true,
+            "door":true,
             "keyhash":1,
-            "door":true
+            "open_code":"lambda self: (self.gs.current_room.items.remove(self))"
         }
     }
 ]

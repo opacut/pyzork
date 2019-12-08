@@ -106,5 +106,13 @@
             "locked": [],
             "items": [],
             "special": {}
+        },
+        {
+            "ID":9,
+            "name":"Secret",
+            "description":"A secret room!\nA staircase leads down.",
+            "exits": ["none","none","none","none"],
+            "items": [],
+            "special":{}
         }
     ]
