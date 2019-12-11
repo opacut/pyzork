@@ -63,7 +63,7 @@
                 "e":2,
                 "u":8
             },
-            "locked": [],
+            "locked": ["u"],
             "items": [],
             "special": {}
         },

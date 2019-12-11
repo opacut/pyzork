@@ -22,7 +22,7 @@
             "pickable":true,
             "cuttable":true,
             "consumable": true,
-            "consumable_code":"self.inventory.append(3)"
+            "consumable_code":"self.inventory.append(3);print(\"There is something in the apple...a key to somewhere!\")"
         }
     },
     {
@@ -31,7 +31,7 @@
         "names": ["key"],
         "description":"N/A",
         "inspect":"A key! What could it open?",
-        "description_inventory":"Must be the key to somewhere.",
+        "description_inventory":"A bronze key.",
         "attributes": {
             "pickable":true,
             "keyhash":1,
@@ -47,9 +47,10 @@
         "description_inventory":"Must be a key around here somewhere.",
         "attributes":{
             "opennable":true,
+            "locked":true,
             "door":true,
             "keyhash":1,
-            "open_code":"lambda self: (self.gs.current_room.items.remove(self))"
+            "open_code":"self.player_room.items.remove(self);self.player_room.locked.remove(\"u\")"
         }
     }
 ]
