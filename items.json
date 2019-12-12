@@ -1,6 +1,6 @@
 [
     {
-        "id":1,
+        "id":0,
         "name":"Knife",
         "names": ["knife","rusty knife"],
         "description":"A rusty knife is lying on the table.",
@@ -12,7 +12,7 @@
         }
     },
     {
-        "id":2,
+        "id":1,
         "name":"Apple",
         "names": ["apple"],
         "description":"A juicy green apple is sitting on the desk.",
@@ -22,13 +22,13 @@
             "pickable":true,
             "cuttable":true,
             "consumable": true,
-            "consumable_code":"self.inventory.append(3);print(\"There is something in the apple...a key to somewhere!\")"
+            "consumable_code":"self.inventory.append(2);print(\"There is something in the apple...a key to somewhere!\")"
         }
     },
     {
-        "id":3,
-        "name":"Key",
-        "names": ["key"],
+        "id":2,
+        "name":"Bronze Key",
+        "names": ["bronze key", "key", "metal key"],
         "description":"N/A",
         "inspect":"A key! What could it open?",
         "description_inventory":"A bronze key.",
@@ -39,7 +39,7 @@
         }
     },
     {
-        "id":4,
+        "id":3,
         "name":"Trapdoor",
         "names":["trapdoor"],
         "description": "A trapdoor is at the top of the stairs.",
@@ -51,6 +51,19 @@
             "door":true,
             "keyhash":1,
             "open_code":"self.player_room.items.remove(self);self.player_room.locked.remove(\"u\")"
+        }
+    },
+    {
+        "id":4,
+        "name":"Skeleton Key",
+        "names": ["skeleton key", "key", "old key"],
+        "description":"You glance an old skeleton key in the dusty corner.",
+        "inspect":"This key looks really old! Would it work?",
+        "description_inventory":"A skeleton key.",
+        "attributes": {
+            "pickable":true,
+            "keyhash":2,
+            "key":true
         }
     }
 ]

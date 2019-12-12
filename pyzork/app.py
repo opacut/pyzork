@@ -32,12 +32,16 @@ CANNOT_USE = "That won't work."
 CANNOT_LOOK = "There is no such item here."
 LOCKED = "It's locked!"
 TAKE_ITEM = "You take the %s."
-STARTING_ROOM = 0#"entrance"
+STARTING_ROOM_PLAYER = 0 #"entrance"
+STARTING_ROOM_MONSTER = 7 #"bedroom"
 NO_EXIT = "There is no passage that way."
 SEE_DOOR = "You can see doors leading to the %s to the %s."
 INVENTORY_DESCRIPTION = "You are carrying: "
 EMPTY_INVENTORY = "Your inventory is empty."
 HAVE_NO_KEYS = "You don't have any keys!"
+ALREADY_UNLOCKED = "That direction is already accessible!"
+NO_SUCH_ITEM = "There is no such item in here."
+WRONG_KEY = "The key doesn't fit!"
 EXIT_CODES = {
     'n':0,
     'w':1,
@@ -54,11 +58,15 @@ class GameState:
         self.item_attribute_pairs = self.get_item_attributes_from_file(ITEM_ATTRS_FILE_PATH)
         self.items_repository = self.get_items_from_file(ITEM_FILE_PATH)
         self.player_room = None
-        self.change_current_room(STARTING_ROOM)
+        self.change_current_room(STARTING_ROOM_PLAYER)
         self.loop = True
         self.parser = Parser(self)
         self.inventory = list()
+        self.monster_room = STARTING_ROOM_MONSTER
         #self.room_index = self.build_rooms_index
+
+    def move_monster(self,room_id):
+        pass
 
     def execute(self,code):
         for s in code.split(";"):
@@ -143,23 +151,28 @@ class GameState:
             elif d is 'd':
                 direction = DOWN_NAME.lower()
             room_name = self.get_room_by_id(r).name.lower()
-            retstr += SEE_DOOR % (room_name, direction) # "You can see doors leading to the "+room_name+" to the "+direction+".\n"
-            if d in self.player_room.locked:
-                retstr += " "
-                retstr += LOCKED
+            if d in self.player_room.locked.keys():
+                retstr += self.player_room.locked[d][0] % direction
+            else:
+                retstr += SEE_DOOR % (room_name, direction) # "You can see doors leading to the "+room_name+" to the "+direction+".\n"
             retstr += "\n"
         return retstr
-            
-            
+                 
     def get_item_by_name(self,item_name):
         for i in self.items_repository:
             #item = self.get_item_by_id(i)
-            if i.name.upper().lower() == item_name.upper().lower():
+            if item_name.upper().lower() in i.names:#i.name.upper().lower() == item_name.upper().lower():
                 return i
         return False
 
     def take(self, item_name):
-        item = self.get_item_by_name(item_name)
+        if len(self.player_room.items) == 0:
+            print(CANNOT_TAKE)
+            return
+        item = [item for item in self.items_repository if item_name in item.names and item.id in self.player_room.items][0]
+        #item = self.get_item_by_name(item_name)
+        if not item:
+            print(NO_SUCH_ITEM)
         if item.id in self.player_room.items:
             self.inventory.append(item.id)
             self.player_room.items.remove(item.id)
@@ -264,15 +277,17 @@ class GameState:
 
     def unlock(self,direction):
         #can be direction
-        pass
-        """
         keys = []
-        for item in self.inventory:
+        for i in self.inventory:
+            item = self.get_item_by_id(i)
             if item.attributes['key']:
                 keys.append(item)
         if len(keys) == 0:
             print(HAVE_NO_KEYS)
             return
+        keyhashes = []
+        for k in keys:
+            keyhashes.append(k.attributes["keyhash"])
         if direction in NORTH_STRINGS:
             direction = NORTH_ABBREV
         if direction in WEST_STRINGS:
@@ -285,9 +300,20 @@ class GameState:
             direction = UP_ABBREV
         if direction in DOWN_STRINGS:
             direction = DOWN_ABBREV
-        if self.player_room.locked.contains(direction):
-            self.player_room.locked.remove(direction)
-        """
+        if direction not in self.player_room.locked.keys():
+            print(ALREADY_UNLOCKED)
+        else:
+            if self.player_room.locked[direction][2] in keyhashes:
+                right_key = [key for key in keys if key.attributes["keyhash"]==self.player_room.locked[direction][2]][0]
+                print(self.player_room.locked[direction][1])
+                del self.player_room.locked[direction]
+                #self.player_room.locked.remove(direction)
+                #self.inventory.pop(right_key.id)
+                #del self.inventory[right_key.id]
+                self.inventory.remove(right_key.id)
+            else:
+                print(WRONG_KEY)
+        
 
 class Item:
     def __init__(self,item_data,gs=None):
@@ -329,6 +355,9 @@ class Parser:
 
     def parse(self,inp):
         inp = inp.upper().lower()
+        if inp == " " or inp == "":
+            print(SORRY_STRING)
+            return
         inp_split = inp.split()
         #if len(inp_split) == 1:
         if inp_split[0] == 'look':
@@ -372,7 +401,7 @@ class Parser:
         elif inp_split[0] == 'eat':
             self.game_state.eat(inp_split[-1])
         elif inp_split[0] == 'unlock':
-            self.game_state.unloct(inp_split[-1])
+            self.game_state.unlock(inp_split[-1])
         #these need more
         elif inp_split[0] == 'give':
             self.game_state.give(inp_split[1],inp_split[3])

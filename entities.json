@@ -1,0 +1,16 @@
+[
+    {
+        "id":0,
+        "name":"player",
+        "inventory": [],
+        "current_room": "",
+        "attributes": {}
+    },
+    {
+        "id":1,
+        "name":"monster",
+        "current_room": "",
+        "inventory": [],
+        "attributes": {}
+    }
+]

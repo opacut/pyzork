@@ -9,8 +9,8 @@
                 "w":5,
                 "s":3
             },
-            "locked": [],
-            "items": [],
+            "locked": {},
+            "items": [4],
             "special": {
             }
         },
@@ -23,8 +23,8 @@
                 "n":2,
                 "s":0
             },
-            "locked": [],
-            "items": [1],
+            "locked": {},
+            "items": [0],
             "special": {}
         },
         {
@@ -36,7 +36,7 @@
                 "w":4,
                 "s":1
             },
-            "locked": [],
+            "locked": {},
             "items": [],
             "special": {}
         },
@@ -49,8 +49,8 @@
                 "n":0,
                 "w":7
             },
-            "locked": [],
-            "items": [2],
+            "locked": {},
+            "items": [1],
             "special": {}
         },
         {
@@ -63,7 +63,9 @@
                 "e":2,
                 "u":8
             },
-            "locked": ["u"],
+            "locked": {
+                "u": ["There is a locked trapdoor blocking the way to the %s.","You unlock and open the trapdoor.",1]
+            },
             "items": [],
             "special": {}
         },
@@ -77,7 +79,7 @@
                 "w":6,
                 "e":0
             },
-            "locked": [],
+            "locked": {},
             "items": [],
             "special": {}
         },
@@ -90,7 +92,7 @@
                 "s":7,
                 "e":5
             },
-            "locked": [],
+            "locked": {},
             "items": [],
             "special": {}
         },
@@ -103,7 +105,7 @@
                 "n":6,
                 "e":3
             },
-            "locked": [],
+            "locked": {},
             "items": [],
             "special": {}
         },
@@ -115,7 +117,7 @@
             "exits": {
                 "d":4
             },
-            "locked":[],
+            "locked":{},
             "items": [],
             "special":{}
         }
