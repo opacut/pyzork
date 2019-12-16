@@ -334,6 +334,7 @@ class Item:
     def call(self,activity):
         getattr(self,activity,game_state.sorry)()
 
+
 class Parser:
     def __init__(self,gs):
         self.game_state = gs
@@ -352,7 +353,6 @@ class Parser:
         elif direction in DOWN_STRINGS:
             self.game_state.move('d')
         
-
     def parse(self,inp):
         inp = inp.upper().lower()
         if inp == " " or inp == "":
@@ -413,6 +413,7 @@ class Parser:
             self.game_state.unlock()
         else:
             self.game_state.sorry()
+        
         
 class Room:
     def __init__(self, room_data,gs=None):
