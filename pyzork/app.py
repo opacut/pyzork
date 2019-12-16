@@ -42,6 +42,8 @@ HAVE_NO_KEYS = "You don't have any keys!"
 ALREADY_UNLOCKED = "That direction is already accessible!"
 NO_SUCH_ITEM = "There is no such item in here."
 WRONG_KEY = "The key doesn't fit!"
+NOT_CUTTABLE = "You can't cut that!"
+NOT_A_CUTTER = "That won't cut anything!"
 EXIT_CODES = {
     'n':0,
     'w':1,
@@ -250,7 +252,7 @@ class GameState:
             self.player_room.items.remove(item.id)
             exec(item.attributes['consumable_code'])
         elif item.id in self.inventory and item.attributes['consumable']:
-            self.inventory.remove(item.id)
+            #self.inventory.remove(item.id)
             self.execute(item.attributes['consumable_code'])
         else:
             print(CANNOT_EAT)
@@ -270,6 +272,24 @@ class GameState:
             item1.combine(item2)
         else:
             print(CANNOT_USE)
+
+    def cut(self,item1,item2):
+        item_one = self.get_item_by_name(item1)
+        if not item_one or item_one.id not in self.inventory:
+            print(NO_SUCH_ITEM)
+            return
+        item_two = self.get_item_by_name(item2)
+        if not item_two or item_two.id not in self.inventory:
+            print(NO_SUCH_ITEM)
+            return
+        if not item_two.attributes['cutter']:
+            print(NOT_A_CUTTER)
+            return
+        if not item_one.attributes['cuttable']:
+            print(NOT_CUTTABLE)
+            return
+        self.execute(item_one.attributes['cuttable_code'])
+
 
     def put(self,item):
         #talk to item in room or inventory
@@ -382,33 +402,35 @@ class Parser:
             #self.parse(inp_split[1:])
             #self.game_state.move(inp_split[1])
             self.parse_movement(inp_split[1])
-        elif inp_split[0] == 'take':
+        elif inp_split[0] == 'take' and len(inp_split)>1:
             self.game_state.take(inp_split[-1])
-        elif inp_split[0] == 'open':
+        elif inp_split[0] == 'open' and len(inp_split)>1:
             self.game_state.open(inp_split[-1])
-        elif inp_split[0] == 'close':
+        elif inp_split[0] == 'close' and len(inp_split)>1:
             self.game_state.close(inp_split[-1])
-        elif inp_split[0] == 'read':
+        elif inp_split[0] == 'read' and len(inp_split)>1:
             self.game_state.read(inp_split[-1])
-        elif inp_split[0] == 'push':
+        elif inp_split[0] == 'push' and len(inp_split)>1:
             self.game_state.push(inp_split[-1])
-        elif inp_split[0] == 'pull':
+        elif inp_split[0] == 'pull' and len(inp_split)>1:
             self.game_state.pull(inp_split[-1])
-        elif inp_split[0] == 'pick':
+        elif inp_split[0] == 'pick' and len(inp_split)>1:
             self.game_state.pick(inp_split[-1])
-        elif inp_split[0] == 'talk':
+        elif inp_split[0] == 'talk' and len(inp_split)>1:
             self.game_state.talk(inp_split[-1])
-        elif inp_split[0] == 'eat':
+        elif inp_split[0] == 'eat' and len(inp_split)>1:
             self.game_state.eat(inp_split[-1])
-        elif inp_split[0] == 'unlock':
+        elif inp_split[0] == 'unlock' and len(inp_split)>1:
             self.game_state.unlock(inp_split[-1])
         #these need more
-        elif inp_split[0] == 'give':
-            self.game_state.give(inp_split[1],inp_split[3])
-        elif inp_split[0] == 'use':
-            self.game_state.give(inp_split[1],inp_split[3])
-        elif inp_split[0] == 'put':
-            self.game_state.give(inp_split[1],inp_split[3])
+        elif inp_split[0] == 'give' and len(inp_split)>3:
+            self.game_state.give(inp_split[1],inp_split[-1])
+        elif inp_split[0] == 'use' and len(inp_split)>3:
+            self.game_state.use(inp_split[1],inp_split[-1])
+        elif inp_split[0] == 'put' and len(inp_split)>3:
+            self.game_state.put(inp_split[1],inp_split[-1])
+        elif inp_split[0] == 'cut' and len(inp_split)>3:
+            self.game_state.cut(inp_split[1],inp_split[-1])
         elif inp=='use key on door':
             self.game_state.unlock()
         else:

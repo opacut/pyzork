@@ -22,7 +22,8 @@
             "pickable":true,
             "cuttable":true,
             "consumable": true,
-            "consumable_code":"self.inventory.append(2);print(\"There is something in the apple...a key to somewhere!\")"
+            "consumable_code":"self.inventory.append(2);print(\"There is something in the apple...a key to somewhere!\");self.inventory.remove(1)",
+            "cuttable_code":"self.inventory.append(2);print(\"There is something in the apple...a key to somewhere!\");self.inventory.remove(1)"
         }
     },
     {
