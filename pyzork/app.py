@@ -416,6 +416,19 @@ class GameState:
             return
         self.execute(item_one.attributes['cuttable_code'])
 
+    def wait(self):
+    
+        if self.monster:
+            if self.monster_room == self.player_room:
+                print("You have been eaten, GAME OVER!")
+                self.quit_game()
+                return
+            else:
+                self.move_monster(self.get_random_room_id_for_monster())
+                print(self.get_description())
+        else:
+            pass
+
 
     def put(self,item):
         #talk to item in room or inventory
@@ -506,7 +519,9 @@ class Parser:
             return
         inp_split = inp.split()
         #if len(inp_split) == 1:
-        if inp_split[0] == 'look':
+        if inp_split[0] == 'wait':
+            self.game_state.wait()
+        elif inp_split[0] == 'look':
             if len(inp_split) > 1:
                 if inp_split[1]=='around':
                     self.game_state.inspect()
