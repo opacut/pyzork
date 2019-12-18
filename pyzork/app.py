@@ -1,4 +1,5 @@
 import json
+from random import choice
 
 FILE_PATH = 'rooms.json'
 ITEM_ATTRS_FILE_PATH = 'attributes.json'
@@ -33,7 +34,7 @@ CANNOT_LOOK = "There is no such item here."
 LOCKED = "It's locked!"
 TAKE_ITEM = "You take the %s."
 STARTING_ROOM_PLAYER = 0 #"entrance"
-STARTING_ROOM_MONSTER = 7 #"bedroom"
+STARTING_ROOM_MONSTER = 5 #"bedroom"
 NO_EXIT = "There is no passage that way."
 SEE_DOOR = "You can see doors leading to the %s to the %s."
 INVENTORY_DESCRIPTION = "You are carrying: "
@@ -55,7 +56,7 @@ EXIT_CODES = {
 
 
 class GameState:
-    def __init__(self):
+    def __init__(self, monster=True):
         self.rooms = self.get_rooms_from_file(FILE_PATH)
         self.item_attribute_pairs = self.get_item_attributes_from_file(ITEM_ATTRS_FILE_PATH)
         self.items_repository = self.get_items_from_file(ITEM_FILE_PATH)
@@ -64,11 +65,118 @@ class GameState:
         self.loop = True
         self.parser = Parser(self)
         self.inventory = list()
-        self.monster_room = STARTING_ROOM_MONSTER
+        self.monster = monster
+        if monster:
+            self.monster_room = STARTING_ROOM_MONSTER
+            self.move_monster(STARTING_ROOM_MONSTER,init=True)
+            #self.close_rooms = list(self.get_room_by_id(self.monster_room).exits.values())
+            #self.far_rooms = 
+            #print(self.close_rooms)
         #self.room_index = self.build_rooms_index
 
-    def move_monster(self,room_id):
-        pass
+    # returns a dictionary with room id as key and where the sound is coming from as value  ###returns a list of tuples, where first element is direction from which the sound is comind and second is the room id   ###returns a dictionary where the key is where the sound is coming from and the value is the room id
+    def get_close_rooms(self,room_id):
+        room = self.get_room_by_id(room_id)
+        #close_room_tuples = []
+        close_room_dict = {}
+        for ex, i in room.exits.items():
+            if ex == 'n':
+                #tup = ('s',ex)
+                #close_room_tuples.append(tup)
+                close_room_dict[i] = 's'
+            elif ex == 'w':
+                #tup = ('e',ex)
+                #close_room_tuples.append(tup)
+                close_room_dict[i] = 'e'
+            elif ex == 's':
+                #tup = ('n',ex)
+                #close_room_tuples.append(tup)
+                close_room_dict[i] = 'n'
+            elif ex == 'e':
+                #tup = ('w',ex)
+                #close_room_tuples.append(tup)
+                close_room_dict[i] = 'w'
+            elif ex == 'u':
+                #tup = ('d',ex)
+                #close_room_tuples.append(tup)
+                close_room_dict[i] = 'd'
+            elif ex == 'd':
+                #tup = ('u',ex)
+                #close_room_tuples.append(tup)
+                close_room_dict[i] = 'u'
+        return close_room_dict#close_room_dict #list(self.get_room_by_id(self.monster_room).exits.values())
+
+    def get_far_rooms(self,room_id):
+        far_rooms = {}
+        close_rooms = list(self.get_close_rooms(room_id).keys())
+        for r in close_rooms:#list(self.get_close_rooms(room_id).keys()):
+            room = self.get_room_by_id(r)
+            ks = list(room.exits.keys())
+            for ex, i in room.exits.items():
+                if i == room_id or i in close_rooms:
+                    pass
+                elif ex == 'n':
+                    if i in ks:  
+                        far_rooms[i] += 's'
+                    else:
+                        far_rooms[i] = 's'
+                elif ex == 'w':
+                    if i in ks:
+                        far_rooms[i] += 'e'
+                    else: 
+                       far_rooms[i] = 'e'
+                elif ex == 's':
+                    if i in ks:
+                        far_rooms[i] += 'n'
+                    else:
+                        far_rooms[i] = 'n'
+                elif ex == 'e':
+                    if i in ks:
+                        far_rooms[i] += 'w'
+                    else:
+                        far_rooms[i] = 'w'
+                elif ex == 'u':
+                    if i in ks:
+                        far_rooms[i] += 'd'
+                    else:
+                        far_rooms[i] = 'd'
+                elif ex == 'd':
+                    if i in ks:
+                        far_rooms[i] += 'u'
+                    else:
+                        far_rooms[i] = 'u'
+
+        return far_rooms
+                #if j.id not in done:
+                #    done.append(j.id)
+                #pass
+        #return far_room_tuples
+
+    def move_monster(self,room_id,init=False):
+        #remove old
+        if not init:
+            for r in self.get_close_rooms(self.monster_room):
+                del self.get_room_by_id(r).additional_description['monster_close']
+            for r in self.get_far_rooms(self.monster_room):
+                del self.get_room_by_id(r).additional_description['monster_far']
+        #add new
+        self.monster_room = room_id
+        close_rooms = self.get_close_rooms(self.monster_room)
+        #far_rooms = self.get_far_rooms(self.monster_room)
+        for r,d in close_rooms.items():
+            room = self.get_room_by_id(r)
+            room.additional_description['monster_close'] = "Monster is close. You hear it to the "+d
+        far_rooms = self.get_far_rooms(self.monster_room)
+        for r,d in far_rooms.items():
+            room = self.get_room_by_id(r)
+            room.additional_description['monster_far'] = "Monster is somewhere around. You hear it to the "+d.split()[0]
+            for s in d.split():
+                if s == d.split()[0]:
+                    pass
+                else:
+                    room.additional_description['monster_far'] += "and "+s
+            #room.additional_description['monster_far'] += ".\n"
+            #r.additional_description += "Monster is close."
 
     def execute(self,code):
         for s in code.split(";"):
@@ -117,6 +225,15 @@ class GameState:
     def add_item_to_room(self,item,room):
         self.get_room_by_name(room).items.add(item.id)
 
+    def get_random_room_id_for_monster(self):
+        mr = self.get_room_by_id(self.monster_room)
+        exs = list(mr.exits.values())
+        for i in mr.locked:
+            if i in exs:
+                exs.remove(i)
+        return choice(exs)
+        
+
     def move(self,direction):
         #index = EXIT_CODES[direction]
         if direction in self.player_room.exits.keys():
@@ -124,6 +241,13 @@ class GameState:
                 print(LOCKED)
             else:
                 self.change_current_room(self.player_room.exits[direction])
+                if self.monster:
+                    if self.monster_room == self.player_room:
+                        print("You have been eaten, GAME OVER!")
+                        self.quit_game()
+                        return
+                    else:
+                        self.move_monster(self.get_random_room_id_for_monster())
                 print(self.get_description())
         else:
             print(NO_EXIT)
@@ -136,6 +260,8 @@ class GameState:
 
     def get_description(self):
         retstr = self.player_room.description+"\n"
+        for i in self.player_room.additional_description.values():
+            retstr += i+"\n"
         for i in self.player_room.items:
             retstr += self.get_item_by_id(i).description+"\n"
         for d,r in self.player_room.exits.items():
@@ -447,6 +573,7 @@ class Room:
         self.special = room_data['special']
         self.items = room_data['items']
         self.locked = room_data['locked']
+        self.additional_description = room_data['additional_description']
 
 
 
