@@ -1,5 +1,3 @@
-from pyzork.components.game_state import GameState as game_state
-
 class Item:
     def __init__(self,item_data,gs=None):
         self.game_state = gs
@@ -13,8 +11,8 @@ class Item:
     
     def combine(self,second_item):
         #combine the two items
-        #pass
         pass
 
     def call(self,activity):
-        getattr(self,activity,game_state.sorry)()
+        #getattr(self,activity,game_state.sorry)()
+        pass

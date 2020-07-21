@@ -1,8 +1,8 @@
 import json
-from pyzork.constants import ConstantsProvider as cte
-from pyzork.parser import Parser
-from pyzork.components.room import Room
-from pyzork.components.item import Item
+from constants import ConstantsProvider as cte
+from parser import Parser
+from components.room import Room
+from components.item import Item
 from random import choice
 
 class GameState:
@@ -102,6 +102,9 @@ class GameState:
                 #pass
         #return far_room_tuples
 
+    def monster_location(self):
+        print("Monster is in "+str(self.monster_room)+".")
+
     def move_monster(self,room_id,init=False):
         #remove old
         if not init:
@@ -115,11 +118,11 @@ class GameState:
         #far_rooms = self.get_far_rooms(self.monster_room)
         for r,d in close_rooms.items():
             room = self.get_room_by_id(r)
-            room.additional_description['monster_close'] = "Monster is close. You hear it to the "+d
+            room.additional_description['monster_close'] = "Monster is close. You hear loud stomps to the "+d
         far_rooms = self.get_far_rooms(self.monster_room)
         for r,d in far_rooms.items():
             room = self.get_room_by_id(r)
-            room.additional_description['monster_far'] = "Monster is somewhere around. You hear it to the "+d.split()[0]
+            room.additional_description['monster_far'] = "Monster is somewhere around. You hear quiet rustling to the "+d.split()[0]
             for s in d.split():
                 if s == d.split()[0]:
                     pass
@@ -183,13 +186,16 @@ class GameState:
                 exs.remove(i)
         return choice(exs)
         
-
     def move(self,direction):
         #index = EXIT_CODES[direction]
         if direction in self.player_room.exits.keys():
             if direction in self.player_room.locked:
                 print(cte.LOCKED)
             else:
+                if self.player_room.exits[direction] == self.monster_room:
+                    print("You have been eaten, GAME OVER!")
+                    self.quit_game()
+                    return
                 self.change_current_room(self.player_room.exits[direction])
                 if self.monster:
                     if self.monster_room == self.player_room:
@@ -379,13 +385,15 @@ class GameState:
         else:
             pass
 
-
     def put(self,item):
         #talk to item in room or inventory
         pass
 
     def unlock(self,direction):
         #can be direction
+        if "door" in direction:
+            print("You need to specify a direction to unlock!")
+            return
         keys = []
         for i in self.inventory:
             item = self.get_item_by_id(i)

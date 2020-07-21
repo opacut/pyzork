@@ -1,4 +1,4 @@
-from pyzork.constants import ConstantsProvider as cte
+from constants import ConstantsProvider as cte
 
 class Parser:
     def __init__(self,gs):
@@ -80,5 +80,11 @@ class Parser:
             self.game_state.cut(inp_split[1],inp_split[-1])
         elif inp=='use key on door':
             self.game_state.unlock()
+        elif inp=='ml':
+            self.game_state.monster_location()
+        elif inp=="quit":
+            self.game_state.quit_game()
+        elif inp=="inventory":
+            self.game_state.look_at("inventory")
         else:
             self.game_state.sorry()
