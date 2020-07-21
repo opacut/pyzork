@@ -4,7 +4,7 @@ class Parser:
     def __init__(self,gs):
         self.game_state = gs
 
-    def parse_movement(self,direction):
+    def _parse_movement(self,direction):
         if direction in cte.NORTH_STRINGS:
             self.game_state.move('n')
         elif direction in cte.WEST_STRINGS:
@@ -17,11 +17,14 @@ class Parser:
             self.game_state.move('u')
         elif direction in cte.DOWN_STRINGS:
             self.game_state.move('d')
+
+    def _sorry(self):
+        print(cte.SORRY_STRING)
         
     def parse(self,inp):
         inp = inp.upper().lower()
         if inp == " " or inp == "":
-            print(cte.SORRY_STRING)
+            self._sorry()
             return
         inp_split = inp.split()
         #if len(inp_split) == 1:
@@ -48,7 +51,7 @@ class Parser:
         elif inp_split[0] in cte.MOVE_VERBS:
             #self.parse(inp_split[1:])
             #self.game_state.move(inp_split[1])
-            self.parse_movement(inp_split[1])
+            self._parse_movement(inp_split[1])
         elif inp_split[0] == 'take' and len(inp_split)>1:
             self.game_state.take(inp_split[-1])
         elif inp_split[0] == 'open' and len(inp_split)>1:

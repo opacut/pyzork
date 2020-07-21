@@ -113,6 +113,11 @@ class GameState:
             for r in self.get_far_rooms(self.monster_room):
                 del self.get_room_by_id(r).additional_description['monster_far']
         #add new
+        if room_id == self.player_room.id:
+            print("You have been eaten, GAME OVER!")
+            print("DEBUG: PLAYER: "+str(self.player_room.id)+" MONSTER: "+str(self.monster_room))
+            self.quit_game()
+            return
         self.monster_room = room_id
         close_rooms = self.get_close_rooms(self.monster_room)
         #far_rooms = self.get_far_rooms(self.monster_room)
@@ -186,14 +191,18 @@ class GameState:
                 exs.remove(i)
         return choice(exs)
         
+
     def move(self,direction):
         #index = EXIT_CODES[direction]
         if direction in self.player_room.exits.keys():
             if direction in self.player_room.locked:
                 print(cte.LOCKED)
             else:
-                if self.player_room.exits[direction] == self.monster_room:
+                monster_room_new = self.get_random_room_id_for_monster()
+                #if self.player_room.exits[direction] == monster_room_new:
+                if self.player_room.id == monster_room_new and self.player_room.exits[direction] == self.monster_room:
                     print("You have been eaten, GAME OVER!")
+                    print("DEBUG: PLAYER: "+str(self.player_room.id)+" to "+str(self.player_room.exits[direction])+" MONSTER: "+str(self.monster_room)+" to "+str(monster_room_new))
                     self.quit_game()
                     return
                 self.change_current_room(self.player_room.exits[direction])
@@ -203,7 +212,7 @@ class GameState:
                         self.quit_game()
                         return
                     else:
-                        self.move_monster(self.get_random_room_id_for_monster())
+                        self.move_monster(monster_room_new)
                 print(self.get_description())
         else:
             print(cte.NO_EXIT)
@@ -375,15 +384,16 @@ class GameState:
     def wait(self):
     
         if self.monster:
+            self.move_monster(self.get_random_room_id_for_monster())
             if self.monster_room == self.player_room:
                 print("You have been eaten, GAME OVER!")
                 self.quit_game()
                 return
             else:
-                self.move_monster(self.get_random_room_id_for_monster())
                 print(self.get_description())
         else:
-            pass
+            print("Time passes")
+            print(self.get_description())
 
     def put(self,item):
         #talk to item in room or inventory
