@@ -1,7 +1,7 @@
 class ConstantsProvider:
-    FILE_PATH = 'data/rooms.json'
-    ITEM_ATTRS_FILE_PATH = 'data/attributes.json'
-    ITEM_FILE_PATH = 'data/items.json'
+    FILE_PATH = './pyzork/data/rooms.json'
+    ITEM_ATTRS_FILE_PATH = './pyzork/data/attributes.json'
+    ITEM_FILE_PATH = './pyzork/data/items.json'
     ACTION_VERBS = ['go','move','look','inspect','take','open','close','push','pull','pick','talk']
     COMBINATION_VERBS = ['give','use','put']
     INSPECT_VERBS = ['look','inspect']

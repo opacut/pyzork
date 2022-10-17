@@ -231,17 +231,17 @@ class GameState:
             retstr += self.get_item_by_id(i).description+"\n"
         for d,r in self.player_room.exits.items():
             direction = ""
-            if d is 'n':
+            if d == 'n':
                 direction = cte.NORTH_NAME
-            elif d is 'w':
+            elif d == 'w':
                 direction = cte.WEST_NAME
-            elif d is 's':
+            elif d == 's':
                 direction = cte.SOUTH_NAME
-            elif d is 'e':
+            elif d == 'e':
                 direction = cte.EAST_NAME
-            elif d is 'u':
+            elif d == 'u':
                 direction = cte.UP_NAME.lower()
-            elif d is 'd':
+            elif d == 'd':
                 direction = cte.DOWN_NAME.lower()
             room_name = self.get_room_by_id(r).name.lower()
             if d in self.player_room.locked.keys():
